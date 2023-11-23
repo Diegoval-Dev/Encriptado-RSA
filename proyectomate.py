@@ -1,85 +1,64 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 
-class SistemRSA:
+class SistemaRSA:
     def __init__(self, root):
         self.root = root
         root.title("Sistema RSA")
 
-        self.create_labels()
-        self.create_buttons()
-        
-        screen_width = root.winfo_screenwidth()
-        screen_height = root.winfo_screenheight()
+        self.titulos()
+        self.buttonCategory()
 
-        x_position = (screen_width - root.winfo_reqwidth()) // 2
-        y_position = (screen_height - root.winfo_reqheight()) // 2
+    def titulos(self):
+        ttk.Label(self.root, text="Proyecto - El sistema RSA", font=("Times new roman", 16)).grid(row=0, column=0, columnspan=2, pady=(10, 5))
+        ttk.Label(self.root, text="Ruth de León - Diego Valenzuela", font=("Times new roman", 10)).grid(row=0, column=0, columnspan=2, pady=(10, 50))
 
-        root.geometry(f"+{x_position}+{y_position}")
+    def buttonCategory(self):
+        ttk.Button(self.root, text="Encriptar", command=self.ventana_ex).grid(row=2, column=0, padx=30, pady=15)
+        ttk.Button(self.root, text="Desencriptar", command=self.ventana_dx).grid(row=2, column=1, padx=30, pady=15)
 
-    def create_labels(self):
-        ttk.Label(self.root, text="Bienvenido al Sistema RSA", font=("Times new roman", 16)).grid(row=0, column=0, columnspan=2, pady=(10, 5))
+    def ventana_ex(self):
+        windows_encriptar = self.crear_ventana("Encriptador RSA")
 
-    def create_buttons(self):
-        ttk.Button(self.root, text="Encriptar", command=self.open_encrypt_window).grid(row=2, column=0, padx=10, pady=10)
-        ttk.Button(self.root, text="Desencriptar", command=self.open_decrypt_window).grid(row=2, column=1, padx=10, pady=10)
+        ttk.Label(windows_encriptar, text="Mensaje:").grid(row=0, column=0, sticky="w")
+        message = ttk.Entry(windows_encriptar, width=50)
+        message.grid(row=0, column=1)
 
-    def open_encrypt_window(self):
-        encrypt_window = self.create_window("Encriptador RSA")
+        self.new_clave(windows_encriptar, fila_inicio=1)
 
-        ttk.Label(encrypt_window, text="Mensaje:").grid(row=0, column=0, sticky="w")
-        message_entry = ttk.Entry(encrypt_window, width=50)
-        message_entry.grid(row=0, column=1)
+        ttk.Button(windows_encriptar, text="Encriptar", command=lambda: self.ex_mssage(message)).grid(row=4, column=0, columnspan=2)
 
-        self.create_key_entries(encrypt_window, row_start=1)
+    def ventana_dx(self):
+        windows_desencriptar = self.crear_ventana("Desencriptador RSA")
 
-        ttk.Button(encrypt_window, text="Encriptar", command=lambda: self.encrypt_message(message_entry)).grid(row=4, column=0, columnspan=2)
+        ttk.Label(windows_desencriptar, text="Mensaje Cifrado:").grid(row=0, column=0, sticky="w")
+        entrada_cifrado = ttk.Entry(windows_desencriptar, width=50)
+        entrada_cifrado.grid(row=0, column=1)
 
-    def open_decrypt_window(self):
-        decrypt_window = self.create_window("Desencriptador RSA")
+        self.new_clave(windows_desencriptar, fila_inicio=1)
 
-        ttk.Label(decrypt_window, text="Mensaje Cifrado:").grid(row=0, column=0, sticky="w")
-        cipher_entry = ttk.Entry(decrypt_window, width=50)
-        cipher_entry.grid(row=0, column=1)
+        ttk.Button(windows_desencriptar, text="Desencriptar", command=lambda: self.ex_message(entrada_cifrado)).grid(row=4, column=0, columnspan=2)
 
-        self.create_key_entries(decrypt_window, row_start=1)
+    def new_clave(self, ventana, fila_inicio):
+        etiquetas = ["p (primo):", "q (primo):", "e (entero > 1 y coprimo con φ):"]
+        entradas = [ttk.Entry(ventana, width=20) for _ in range(len(etiquetas))]
 
-        ttk.Button(decrypt_window, text="Desencriptar", command=lambda: self.decrypt_message(cipher_entry)).grid(row=4, column=0, columnspan=2)
+        for i, etiqueta in enumerate(etiquetas):
+            ttk.Label(ventana, text=etiqueta).grid(row=fila_inicio + i, column=0, sticky="w")
+            entradas[i].grid(row=fila_inicio + i, column=1)
 
-    def create_key_entries(self, window, row_start):
-        labels = ["p (primo):", "q (primo):", "e (entero > 1 y coprimo con φ):"]
-        entries = [ttk.Entry(window, width=20) for _ in range(len(labels))]
+    def crear_ventana(self, titulo):
+        ventana = tk.Toplevel(self.root)
+        ventana.title(titulo)
+        return ventana
 
-        for i, label in enumerate(labels):
-            ttk.Label(window, text=label).grid(row=row_start + i, column=0, sticky="w")
-            entries[i].grid(row=row_start + i, column=1)
-
-    def create_window(self, title):
-        window = tk.Toplevel(self.root)
-        window.title(title)
-        
-        window.withdraw()
-        window.update_idletasks()
-        window_width = window.winfo_reqwidth()
-        window_height = window.winfo_reqheight()
-        x_position = (window.winfo_screenwidth() - window_width) // 2
-        y_position = (window.winfo_screenheight() - window_height) // 2
-        window.geometry(f"+{x_position}+{y_position}")
-        window.deiconify()
-        
-        return window
-
-    def encrypt_message(self, message_entry):
-        # Implementa la lógica de encriptación
+    def ex_mssage(self, message):
         pass
 
-    def decrypt_message(self, cipher_entry):
-        # Implementa la lógica de desencriptación
+    def x_message(self, entrada_cifrado):
         pass
 
-# Crear la ventana principal
-root = tk.Tk()
-app = SistemRSA(root)
+raiz = tk.Tk()
+aplicacion = SistemaRSA(raiz)
 
-# Ejecutar la aplicación
-root.mainloop()
+raiz.mainloop()
