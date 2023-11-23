@@ -1,97 +1,85 @@
 import tkinter as tk
+from tkinter import ttk, messagebox
 
-def encode_message(message):
-    encoding = {'A': '00', 'B': '01', 'C': '02', 'D': '03', 'E': '04', 'F': '05', 'G': '06', 'H': '07',
-                'I': '08', 'J': '09', 'K': '10', 'L': '11', 'M': '12', 'N': '13', 'O': '14', 'P': '15',
-                'Q': '16', 'R': '17', 'S': '18', 'T': '19', 'U': '20', 'V': '21', 'W': '22', 'X': '23',
-                'Y': '24', 'Z': '25'}
-    
-    encoded_message = ''
-    for char in message:
-        if char.isalpha():
-            encoded_message += encoding[char.upper()]
-    
-    return encoded_message
+class SistemRSA:
+    def __init__(self, root):
+        self.root = root
+        root.title("Sistema RSA")
 
-def encrypt_rsa_blocks(encoded_blocks, public_key):
-    e, n = public_key
-    encrypted_blocks = []
+        self.create_labels()
+        self.create_buttons()
+        
+        screen_width = root.winfo_screenwidth()
+        screen_height = root.winfo_screenheight()
 
-    for block in encoded_blocks:
-        num_block = int(block)
-        encrypted_block = pow(num_block, e, n)
-        encrypted_blocks.append(str(encrypted_block).zfill(4))
+        x_position = (screen_width - root.winfo_reqwidth()) // 2
+        y_position = (screen_height - root.winfo_reqheight()) // 2
 
-    return encrypted_blocks
+        root.geometry(f"+{x_position}+{y_position}")
 
-def decrypt_rsa_blocks(encrypted_blocks, public_key):
-    d, n = public_key
-    decrypted_blocks = []
+    def create_labels(self):
+        ttk.Label(self.root, text="Bienvenido al Sistema RSA", font=("Times new roman", 16)).grid(row=0, column=0, columnspan=2, pady=(10, 5))
 
-    for block in encrypted_blocks:
-        num_block = int(block)
-        decrypted_block = pow(num_block, d, n)
-        decrypted_blocks.append(chr(decrypted_block))
+    def create_buttons(self):
+        ttk.Button(self.root, text="Encriptar", command=self.open_encrypt_window).grid(row=2, column=0, padx=10, pady=10)
+        ttk.Button(self.root, text="Desencriptar", command=self.open_decrypt_window).grid(row=2, column=1, padx=10, pady=10)
 
-    return decrypted_blocks
+    def open_encrypt_window(self):
+        encrypt_window = self.create_window("Encriptador RSA")
 
-def encrypt_message():
-    message_to_encrypt = entry_message.get()
-    public_key = (13, 2537)
+        ttk.Label(encrypt_window, text="Mensaje:").grid(row=0, column=0, sticky="w")
+        message_entry = ttk.Entry(encrypt_window, width=50)
+        message_entry.grid(row=0, column=1)
 
-    # Codificar el mensaje según la codificación dada
-    encoded_message = encode_message(message_to_encrypt)
+        self.create_key_entries(encrypt_window, row_start=1)
 
-    # Agrupar las letras en bloques de 2
-    block_size = 2
-    encoded_blocks = [encoded_message[i:i+block_size] for i in range(0, len(encoded_message), block_size)]
+        ttk.Button(encrypt_window, text="Encriptar", command=lambda: self.encrypt_message(message_entry)).grid(row=4, column=0, columnspan=2)
 
-    # Encriptar los bloques usando RSA
-    encrypted_blocks = encrypt_rsa_blocks(encoded_blocks, public_key)
+    def open_decrypt_window(self):
+        decrypt_window = self.create_window("Desencriptador RSA")
 
-    # Actualizar la etiqueta de salida
-    output_label.config(text=f"Bloques encriptados: {' '.join(encrypted_blocks)}")
+        ttk.Label(decrypt_window, text="Mensaje Cifrado:").grid(row=0, column=0, sticky="w")
+        cipher_entry = ttk.Entry(decrypt_window, width=50)
+        cipher_entry.grid(row=0, column=1)
 
-def decrypt_message():
-    encrypted_blocks_str = entry_ciphertext.get()
-    encrypted_blocks = encrypted_blocks_str.split()
-    public_key = (937, 43*59)  # Usando la clave privada generada anteriormente
+        self.create_key_entries(decrypt_window, row_start=1)
 
-    # Desencriptar los bloques usando RSA
-    decrypted_blocks = decrypt_rsa_blocks(encrypted_blocks, public_key)
+        ttk.Button(decrypt_window, text="Desencriptar", command=lambda: self.decrypt_message(cipher_entry)).grid(row=4, column=0, columnspan=2)
 
-    # Actualizar la etiqueta de salida
-    output_label_decrypt.config(text=f"Bloques desencriptados: {''.join(decrypted_blocks)}")
+    def create_key_entries(self, window, row_start):
+        labels = ["p (primo):", "q (primo):", "e (entero > 1 y coprimo con φ):"]
+        entries = [ttk.Entry(window, width=20) for _ in range(len(labels))]
+
+        for i, label in enumerate(labels):
+            ttk.Label(window, text=label).grid(row=row_start + i, column=0, sticky="w")
+            entries[i].grid(row=row_start + i, column=1)
+
+    def create_window(self, title):
+        window = tk.Toplevel(self.root)
+        window.title(title)
+        
+        window.withdraw()
+        window.update_idletasks()
+        window_width = window.winfo_reqwidth()
+        window_height = window.winfo_reqheight()
+        x_position = (window.winfo_screenwidth() - window_width) // 2
+        y_position = (window.winfo_screenheight() - window_height) // 2
+        window.geometry(f"+{x_position}+{y_position}")
+        window.deiconify()
+        
+        return window
+
+    def encrypt_message(self, message_entry):
+        # Implementa la lógica de encriptación
+        pass
+
+    def decrypt_message(self, cipher_entry):
+        # Implementa la lógica de desencriptación
+        pass
 
 # Crear la ventana principal
-window = tk.Tk()
-window.title("RSA Encryption and Decryption")
+root = tk.Tk()
+app = SistemRSA(root)
 
-# Crear y posicionar widgets para la encriptación
-label_message = tk.Label(window, text="Mensaje:")
-label_message.grid(row=0, column=0, padx=5, pady=5)
-
-entry_message = tk.Entry(window)
-entry_message.grid(row=0, column=1, padx=5, pady=5)
-
-encrypt_button = tk.Button(window, text="Encriptar", command=encrypt_message)
-encrypt_button.grid(row=0, column=2, padx=5, pady=5)
-
-output_label = tk.Label(window, text="Bloques encriptados:")
-output_label.grid(row=1, column=0, columnspan=3, padx=5, pady=5)
-
-# Crear y posicionar widgets para la desencriptación
-label_ciphertext = tk.Label(window, text="Mensaje cifrado:")
-label_ciphertext.grid(row=2, column=0, padx=5, pady=5)
-
-entry_ciphertext = tk.Entry(window)
-entry_ciphertext.grid(row=2, column=1, padx=5, pady=5)
-
-decrypt_button = tk.Button(window, text="Desencriptar", command=decrypt_message)
-decrypt_button.grid(row=2, column=2, padx=5, pady=5)
-
-output_label_decrypt = tk.Label(window, text="Bloques desencriptados:")
-output_label_decrypt.grid(row=3, column=0, columnspan=3, padx=5, pady=5)
-
-# Iniciar el bucle de eventos
-window.mainloop()
+# Ejecutar la aplicación
+root.mainloop()
