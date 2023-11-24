@@ -1,3 +1,4 @@
+# Referencia: https://es.slideshare.net/eduardosanchezsandoval28/rsa-53700165 
 import tkinter as tk
 from tkinter import ttk, messagebox
 
@@ -9,8 +10,8 @@ class RSA:
         ttk.Label(root, text="Creado por: Ruth de León y Diego Valenzuela", font=("Arial", 9)).grid(row=1, column=0, columnspan=2, pady=(0, 5))
         ttk.Label(root, text="Sistema RSA", font=("Arial", 16)).grid(row=0, column=0, columnspan=2, pady=(0, 10))
 
-        ttk.Button(root, text="Encriptar", command=self.window_encriptar).grid(row=2, column=0, padx=10, pady=10)
-        ttk.Button(root, text="Desencriptar", command=self.window_desencriptar).grid(row=2, column=1, padx=10, pady=10)
+        ttk.Button(root, text="Encriptar", command=self.encriptar_window).grid(row=2, column=0, padx=10, pady=10)
+        ttk.Button(root, text="Desencriptar", command=self.desencriptar_window).grid(row=2, column=1, padx=10, pady=10)
 
     def encriptar_window(self):
         window_encriptar = tk.Toplevel(self.root)
