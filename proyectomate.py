@@ -1,5 +1,6 @@
 # Referencia: https://es.slideshare.net/eduardosanchezsandoval28/rsa-53700165 
 # GitHub: https://github.com/Diegoval-Dev/Encriptado-RSA
+# Creado por: Ruth de León y Diego Valenzuela
 import tkinter as tk
 from tkinter import ttk, messagebox
 
@@ -18,24 +19,30 @@ class RSA:
         window_encriptar = tk.Toplevel(self.root)
         window_encriptar.title("Encriptador RSA")
 
-        tk.Label(window_encriptar, text="Texto a Encriptar:").grid(row=0, column=0, sticky="w")
+        label = tk.Label(window_encriptar, text="Pregunta 1", font=("Arial", 14, "bold")).grid(row=0, column=0, columnspan=2, sticky="n", pady=(0, 5))
+
+        tk.Label(window_encriptar, text="Texto a Encriptar:").grid(row=1, column=0, sticky="w")
         message_recibido = ttk.Entry(window_encriptar, width=50)
-        message_recibido.grid(row=0, column=1)
+        message_recibido.grid(row=1, column=1)
 
-        tk.Label(window_encriptar, text="p (primo):").grid(row=1, column=0, sticky="w")
+        tk.Label(window_encriptar, text="Primos:", font=("Arial", 11, "bold")).grid(row=2, column=0, sticky="w")
+
+        tk.Label(window_encriptar, text="p").grid(row=3, column=0, sticky="w")
         primo_p = ttk.Entry(window_encriptar, width=20)
-        primo_p.grid(row=1, column=1)
+        primo_p.grid(row=3, column=1)
 
-        tk.Label(window_encriptar, text="q (primo):").grid(row=2, column=0, sticky="w")
+        tk.Label(window_encriptar, text="q").grid(row=4, column=0, sticky="w")
         primo_q = ttk.Entry(window_encriptar, width=20)
-        primo_q.grid(row=2, column=1)
+        primo_q.grid(row=4, column=1)
 
-        tk.Label(window_encriptar, text="e (entero > 1 y coprimo con φ):").grid(row=3, column=0, sticky="w")
+        tk.Label(window_encriptar, text="e > 1 primo relativo con 𝜙 = (p - 1)(1 - 1):" , font=("Arial", 11, "bold")).grid(row=5, column=0, sticky="w")
+
+        tk.Label(window_encriptar, text="e").grid(row=6, column=0, sticky="w")
         num_e = ttk.Entry(window_encriptar, width=20)
-        num_e.grid(row=3, column=1)
+        num_e.grid(row=6, column=1)
 
-        encripB = ttk.Button(window_encriptar, text="Encriptar", command=lambda: self.encriptar_mensaje(message_recibido, primo_p, primo_q, num_e))
-        encripB.grid(row=4, column=0, columnspan=2)
+        encripB = ttk.Button(window_encriptar, text="Encriptar", command=lambda: self.msg_encriptar(message_recibido, primo_p, primo_q, num_e))
+        encripB.grid(row=7, column=0, columnspan=2)
 
     def msg_encriptar(self, message_recibido, primo_p, primo_q, num_e):
         try:
@@ -71,20 +78,26 @@ class RSA:
         window_desencriptar = tk.Toplevel(self.root)
         window_desencriptar.title("Desencriptador en RSA")
 
-        tk.Label(window_desencriptar, text="Mensaje Cifrado:").grid(row=0, column=0, sticky="w")
+        label = tk.Label(window_desencriptar, text="Pregunta 2", font=("Arial", 14, "bold")).grid(row=0, column=0, columnspan=2, sticky="n", pady=(0, 5))
+
+        tk.Label(window_desencriptar, text="Mensaje Cifrado:").grid(row=1, column=0, sticky="w")
         cifrado_start = ttk.Entry(window_desencriptar, width=50)
-        cifrado_start.grid(row=0, column=1)
+        cifrado_start.grid(row=1, column=1)
 
-        tk.Label(window_desencriptar, text="n:").grid(row=1, column=0, sticky="w")
+        tk.Label(window_desencriptar, text="n = 43 * 59").grid(row=2, column=0, sticky="w")
+
+        tk.Label(window_desencriptar, text="n:").grid(row=3, column=0, sticky="w")
         num_n = ttk.Entry(window_desencriptar, width=20)
-        num_n.grid(row=1, column=1)
+        num_n.grid(row=3, column=1)
 
-        tk.Label(window_desencriptar, text="e:").grid(row=2, column=0, sticky="w")
+        tk.Label(window_desencriptar, text="e = 13").grid(row=4, column=0, sticky="w")
+
+        tk.Label(window_desencriptar, text="e:").grid(row=5, column=0, sticky="w")
         num_e = ttk.Entry(window_desencriptar, width=20)
-        num_e.grid(row=2, column=1)
+        num_e.grid(row=5, column=1)
 
         desencriptB = ttk.Button(window_desencriptar, text="Desencriptar", command=lambda: self.modo_desencriptar(cifrado_start, num_n, num_e))
-        desencriptB.grid(row=3, column=0, columnspan=2)
+        desencriptB.grid(row=6, column=0, columnspan=2)
 
     def modo_desencriptar(self, cifrado_start, num_n, num_e):
         try:
@@ -104,7 +117,7 @@ class RSA:
             messagebox.showerror("Error", "Entrada inválida")
 
     def inverso_modular(self, a, m):
-        g, x, y = self.egcd(a, m)
+        g, x, y = self.algorithm(a, m)
         if g != 1:
             raise Exception('No existe inverso modular para %d mod %d' % (a, m))
         else:
