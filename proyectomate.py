@@ -1,4 +1,5 @@
 # Referencia: https://es.slideshare.net/eduardosanchezsandoval28/rsa-53700165 
+# GitHub: https://github.com/Diegoval-Dev/Encriptado-RSA
 import tkinter as tk
 from tkinter import ttk, messagebox
 
