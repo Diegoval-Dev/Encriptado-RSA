@@ -1,64 +1,131 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 
-class SistemaRSA:
+class RSA:
     def __init__(self, root):
         self.root = root
-        root.title("Sistema RSA")
+        root.title("Proyecto - Sistema RSA")
 
-        self.titulos()
-        self.buttonCategory()
+        ttk.Label(root, text="Creado por: Ruth de León y Diego Valenzuela", font=("Arial", 9)).grid(row=1, column=0, columnspan=2, pady=(0, 5))
+        ttk.Label(root, text="Sistema RSA", font=("Arial", 16)).grid(row=0, column=0, columnspan=2, pady=(0, 10))
 
-    def titulos(self):
-        ttk.Label(self.root, text="Proyecto - El sistema RSA", font=("Times new roman", 16)).grid(row=0, column=0, columnspan=2, pady=(10, 5))
-        ttk.Label(self.root, text="Ruth de León - Diego Valenzuela", font=("Times new roman", 10)).grid(row=0, column=0, columnspan=2, pady=(10, 50))
+        ttk.Button(root, text="Encriptar", command=self.window_encriptar).grid(row=2, column=0, padx=10, pady=10)
+        ttk.Button(root, text="Desencriptar", command=self.window_desencriptar).grid(row=2, column=1, padx=10, pady=10)
 
-    def buttonCategory(self):
-        ttk.Button(self.root, text="Encriptar", command=self.ventana_ex).grid(row=2, column=0, padx=30, pady=15)
-        ttk.Button(self.root, text="Desencriptar", command=self.ventana_dx).grid(row=2, column=1, padx=30, pady=15)
+    def encriptar_window(self):
+        window_encriptar = tk.Toplevel(self.root)
+        window_encriptar.title("Encriptador RSA")
 
-    def ventana_ex(self):
-        windows_encriptar = self.crear_ventana("Encriptador RSA")
+        tk.Label(window_encriptar, text="Texto a Encriptar:").grid(row=0, column=0, sticky="w")
+        message_recibido = ttk.Entry(window_encriptar, width=50)
+        message_recibido.grid(row=0, column=1)
 
-        ttk.Label(windows_encriptar, text="Mensaje:").grid(row=0, column=0, sticky="w")
-        message = ttk.Entry(windows_encriptar, width=50)
-        message.grid(row=0, column=1)
+        tk.Label(window_encriptar, text="p (primo):").grid(row=1, column=0, sticky="w")
+        primo_p = ttk.Entry(window_encriptar, width=20)
+        primo_p.grid(row=1, column=1)
 
-        self.new_clave(windows_encriptar, fila_inicio=1)
+        tk.Label(window_encriptar, text="q (primo):").grid(row=2, column=0, sticky="w")
+        primo_q = ttk.Entry(window_encriptar, width=20)
+        primo_q.grid(row=2, column=1)
 
-        ttk.Button(windows_encriptar, text="Encriptar", command=lambda: self.ex_mssage(message)).grid(row=4, column=0, columnspan=2)
+        tk.Label(window_encriptar, text="e (entero > 1 y coprimo con φ):").grid(row=3, column=0, sticky="w")
+        num_e = ttk.Entry(window_encriptar, width=20)
+        num_e.grid(row=3, column=1)
 
-    def ventana_dx(self):
-        windows_desencriptar = self.crear_ventana("Desencriptador RSA")
+        encripB = ttk.Button(window_encriptar, text="Encriptar", command=lambda: self.encriptar_mensaje(message_recibido, primo_p, primo_q, num_e))
+        encripB.grid(row=4, column=0, columnspan=2)
 
-        ttk.Label(windows_desencriptar, text="Mensaje Cifrado:").grid(row=0, column=0, sticky="w")
-        entrada_cifrado = ttk.Entry(windows_desencriptar, width=50)
-        entrada_cifrado.grid(row=0, column=1)
+    def msg_encriptar(self, message_recibido, primo_p, primo_q, num_e):
+        try:
+            mensaje = message_recibido.get()
+            p = int(primo_p.get())
+            q = int(primo_q.get())
+            e = int(num_e.get())
+            n = p * q
+            phi = (p - 1) * (q - 1)
 
-        self.new_clave(windows_desencriptar, fila_inicio=1)
+            if e <= 1 or not self.primos(e, phi):
+                messagebox.showerror("Error", "e debe ser mayor que 1 y coprimo con φ")
+                return
 
-        ttk.Button(windows_desencriptar, text="Desencriptar", command=lambda: self.ex_message(entrada_cifrado)).grid(row=4, column=0, columnspan=2)
+            resulnum = ''.join([format(ord(char.upper()) - ord('A'), '02d') for char in mensaje if char.isalpha()])
+            bloques_2 = [int(resulnum[i:i+4]) for i in range(0, len(resulnum), 4)]
 
-    def new_clave(self, ventana, fila_inicio):
-        etiquetas = ["p (primo):", "q (primo):", "e (entero > 1 y coprimo con φ):"]
-        entradas = [ttk.Entry(ventana, width=20) for _ in range(len(etiquetas))]
+            encriptMe = [format(pow(bloque, e, n), '04d') for bloque in bloques_2]
 
-        for i, etiqueta in enumerate(etiquetas):
-            ttk.Label(ventana, text=etiqueta).grid(row=fila_inicio + i, column=0, sticky="w")
-            entradas[i].grid(row=fila_inicio + i, column=1)
+            messagebox.showinfo("Mensaje Encriptado", ' '.join(encriptMe))
+        except ValueError:
+            messagebox.showerror("Error", "Entrada inválida")
 
-    def crear_ventana(self, titulo):
-        ventana = tk.Toplevel(self.root)
-        ventana.title(titulo)
-        return ventana
+    def primos(self, a, b):
+        return self.mcd(a, b) == 1
 
-    def ex_mssage(self, message):
-        pass
+    def mcd(self, a, b):
+        while b:
+            a, b = b, a % b
+        return a
 
-    def x_message(self, entrada_cifrado):
-        pass
+    def desencriptar_window(self):
+        window_desencriptar = tk.Toplevel(self.root)
+        window_desencriptar.title("Desencriptador en RSA")
 
-raiz = tk.Tk()
-aplicacion = SistemaRSA(raiz)
+        tk.Label(window_desencriptar, text="Mensaje Cifrado:").grid(row=0, column=0, sticky="w")
+        cifrado_start = ttk.Entry(window_desencriptar, width=50)
+        cifrado_start.grid(row=0, column=1)
 
-raiz.mainloop()
+        tk.Label(window_desencriptar, text="n:").grid(row=1, column=0, sticky="w")
+        num_n = ttk.Entry(window_desencriptar, width=20)
+        num_n.grid(row=1, column=1)
+
+        tk.Label(window_desencriptar, text="e:").grid(row=2, column=0, sticky="w")
+        num_e = ttk.Entry(window_desencriptar, width=20)
+        num_e.grid(row=2, column=1)
+
+        desencriptB = ttk.Button(window_desencriptar, text="Desencriptar", command=lambda: self.modo_desencriptar(cifrado_start, num_n, num_e))
+        desencriptB.grid(row=3, column=0, columnspan=2)
+
+    def modo_desencriptar(self, cifrado_start, num_n, num_e):
+        try:
+            cifrado_txt = [int(bloque) for bloque in cifrado_start.get().split()]
+            n = int(num_n.get())
+            e = int(num_e.get())
+
+            phi = self.phi(n)
+            d = self.inverso_modular(e, phi)
+
+            desenBlocks = [pow(c, d, n) for c in cifrado_txt]
+
+            desencriptado_msg = ''.join([chr(bloque // 100 + ord('A')) + chr(bloque % 100 + ord('A')) for bloque in desenBlocks])
+
+            messagebox.showinfo("Resultado de Desencriptación", f"Mensaje Desencriptado: {desencriptado_msg}\nClave Privada d: {d}")
+        except ValueError:
+            messagebox.showerror("Error", "Entrada inválida")
+
+    def inverso_modular(self, a, m):
+        g, x, y = self.egcd(a, m)
+        if g != 1:
+            raise Exception('No existe inverso modular para %d mod %d' % (a, m))
+        else:
+            return x % m
+
+    def algorithm(self, a, b):
+        if a == 0:
+            return b, 0, 1
+        else:
+            MCD, x, y = self.algorithm(b % a, a)
+            return MCD, y - (b // a) * x, x
+
+    def phi(self, n):
+        p, q = self.facto(n)
+        return (p - 1) * (q - 1)
+
+    def facto(self, n):
+        for i in range(2, int(n**0.5) + 1):
+            if n % i == 0:
+                return i, n // i
+        return n, 1
+
+root = tk.Tk()
+app = RSA(root)
+
+root.mainloop()
